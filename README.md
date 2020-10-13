@@ -26,10 +26,15 @@ $ cp ./apis-log/setting_files/* ./apis-log_exe
 
 ## Parameter Setting
 Set the following file parameters in the apis-log_exe at least to suit your environment.   
-Refer to "Chapter 7, About Configuration Files" in the [apis-log_specification](#anchor1) for more information.
+Refer to "Chapter 6, About Configuration Files" in the [apis-log_specification](#anchor1) for more information.
+
+&emsp;config.json   
+&emsp;&emsp;&emsp;- communityId   &emsp;(default : oss_communityId)  
+&emsp;&emsp;&emsp;- clusterId     &emsp;(default : oss_clusterId)  
 
 &emsp;start.sh  
 &emsp;&emsp;&emsp;- java arguments &emsp;(default : 127.0.0.1) 
+
 
 
 ## Running

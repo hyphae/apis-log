@@ -2,8 +2,8 @@
 
 ## Introduction
 
-apis-logはapis-main等がコミュニケーションラインにマルチキャストで出力する情報を受信し  
-JSON形式に整えた上でデータベースに書き込みを行うソフトウェアである。
+apis-logはapis-main等がコミュニケーションラインにマルチキャストで出力する情報を受信しJSON形式に整えた上で  
+データベースに書き込みを行うソフトウェアである。
 
 ![キャプチャ](https://user-images.githubusercontent.com/71874910/95825383-bb4d5000-0d6b-11eb-97ab-c0012842111c.PNG)
 

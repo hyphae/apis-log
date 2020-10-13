@@ -1,0 +1,86 @@
+{
+	// 起動時に引数 -conf path/to/this_file.json で指定する
+
+	// programId : プログラム識別文字列
+	//             ApisLoggerFormatter によりログの行頭に出力される
+	"programId" : "apis-log",
+
+	// communityId : コミュニティ識別文字列
+	//               clusterId および APIS バージョン文字列とともに暗号化のシードとして用いられる
+	"communityId" : "dev",
+	// clusterId : クラスタ識別文字列
+	//             communityId および APIS バージョン文字列とともに暗号化のシードとして用いられる
+	"clusterId" : "dev",
+
+	// logReceiver : マルチキャストされているログを受信する設定
+	"logReceiver" : {
+		// ipv6 : IPv6 フラグ
+		//        デフォルト : true
+		"ipv6" : true,
+		// multicastGroupAddress : マルチキャストグループアドレス
+		//                         デフォルト : ipv6 が true なら FF02:0:0:0:0:0:0:1
+		//                         デフォルト : ipv6 が false なら 224.2.2.4
+		"multicastGroupAddress" : "FF02:0:0:0:0:0:0:1%eth0",
+		// port : ポート
+		//        型 : Integer
+		//        デフォルト : 8888
+		"port" : 8888,
+		// printToStdout : 標準出力フラグ
+		//                 受信したログを標準出力に出力するか否か
+		//                 デフォルト : false
+		"printToStdout" : false
+	},
+
+	// mongoDbWriter : 受信したログを MongoDB に保存する設定
+	"mongoDbWriter" : {
+		// enabled : 有効フラグ
+		//           MongoDB に保存するか否か
+		//           デフォルト : false
+		"enabled" : false,
+		// level : 保存ログレベル
+		//         MongoDB に保存するログレベル
+		//         デフォルト : INFO
+		"level" : "INFO",
+		// host : MongoDB ホスト名
+		//        デフォルト : localhost
+		"host" : "localhost",
+		// port : MongoDB ポート
+		//        型 : Integer
+		//        デフォルト : 27017
+		"port" : 27017,
+		// ssl : SSL フラグ
+		//       デフォルト : false
+		"ssl" : false,
+		// sslTrustAll : SSL なんでも OK フラグ
+		//               デフォルト : false
+		"sslTrustAll" : false,
+		// database : MongoDB データベース名
+		"database" : "logs",
+		// collection : MongoDB コレクション名
+		"collection" : "units"
+	},
+
+	// watchdog : watchdog 設定
+	"watchdog" : {
+		// enabled : 有効フラグ
+		//           watchdog 機能を実行するか否か
+		"enabled" : false,
+		// periodMsec : 実行周期
+		//              型 : Long
+		//              デフォルト : 5000L
+		"periodMsec" : 5000,
+		// host : watchdog サービスのホスト名
+		"host" : "0.0.0.0",
+		// port : watchdog サービスのポート
+		//        型 : Integer
+		//        必須
+		"port" : 12345,
+		// uri : watchdog サービスの URI
+		"uri" : "/restart",
+		// requestTimeoutMsec : HTTP リクエストのタイムアウト時間
+		//                      型 : Long
+		//                      デフォルト : 5000L
+		"requestTimeoutMsec" : 5000
+	}
+
+}

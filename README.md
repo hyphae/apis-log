@@ -2,6 +2,8 @@
 
 ## Introduction
 
+apis-logはapis-main等がコミュニケーションラインにマルチキャストで出力する情報を受信し  
+JSON形式に整えた上でデータベースに書き込みを行うソフトウェアである。
 
 ## Installation
 ```bash

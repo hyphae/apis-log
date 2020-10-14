@@ -21,10 +21,6 @@ $ cd ../
 $ git cone https://github.com/SonyCSL/apis-log.git
 $ cd apis-log
 $ mvn package
-$ cd ../
-$ mkdir apis-log_exe
-$ cp ./apis-log/target/apis-log-*-fat.jar ./apis-log_exe
-$ cp ./apis-log/setting_files/* ./apis-log_exe
 ```
 
 ## Parameter Setting
@@ -43,7 +39,7 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-log_specification](
 ## Running
 
 ```bash
-$ cd apis-log_exe
+$ cd exe
 $ bash start.sh
 ```
 

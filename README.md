@@ -32,7 +32,8 @@ Refer to "Chapter 6, About Configuration Files" in the [apis-log_specification](
 &emsp;&emsp;&emsp;- clusterId     &emsp;(default : oss_clusterId)  
 
 &emsp;start.sh  
-&emsp;&emsp;&emsp;- java arguments &emsp;(default : 127.0.0.1) 
+&emsp;&emsp;&emsp;-conf &emsp; (default : ./config.json)  
+&emsp;&emsp;&emsp;-cluster-host &emsp; (default : 127.0.0.1)  
 
 
 

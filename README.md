@@ -9,8 +9,8 @@ apis-logはapis-main等がコミュニケーションラインにマルチキャ
 
 
 ## Installation
-
-Maven and JDK shall be installed in advance.  
+Here is how to install apis-log individually.  
+Maven and JDK must be installed in advance.  
 
 ```bash
 $ git clone https://github.com/SonyCSL/apis-bom.git
@@ -27,7 +27,7 @@ $ mvn package
 ```
 
 ## Parameter Setting
-Set the following file parameters in the exe folder at least to suit your environment.   
+Set the following parameters in the exe folder as necessary.   
 Refer to "Chapter 6, About Configuration Files" in the [apis-log_specification](#anchor1) for more information.
 
 &emsp;config.json   

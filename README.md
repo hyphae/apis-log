@@ -10,7 +10,7 @@ apis-logはapis-main等がコミュニケーションラインにマルチキャ
 
 ## Installation
 Here is how to install apis-log individually.  
-Maven and JDK must be installed in advance.  
+git, maven, groovy and JDK must be installed in advance.
 
 ```bash
 $ git clone https://github.com/SonyCSL/apis-bom.git

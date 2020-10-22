@@ -28,12 +28,16 @@ $ mvn package
 
 ## Running
 
+Here is how to run apis-log individually.  
+
 ```bash
 $ cd exe
 $ bash start.sh
 ```
 
 ## Stopping
+
+Here is how to stop apis-log individually.  
 
 ```bash
 $ cd exe

@@ -87,7 +87,7 @@ public class LogReceiver extends AbstractVerticle {
 				String networkInterfaceName = resNetworkInterfaceName.result();
 				DatagramSocket socket;
 				try {
-					socket = vertx.createDatagramSocket(new DatagramSocketOptions().setIpV6(ipv6));
+					socket = vertx.createDatagramSocket(new DatagramSocketOptions().setReuseAddress(true).setReusePort(true).setIpV6(ipv6));
 				} catch (Exception e) {
 					completionHandler.handle(Future.failedFuture(e));
 					return;

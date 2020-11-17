@@ -137,7 +137,7 @@ public class LogReceiver extends AbstractVerticle {
 				outside: while (nis.hasMoreElements()) {
 					NetworkInterface ni = nis.nextElement();
 					if (!ni.isLoopback() && ni.isUp()) {
-						if (ni.getName() != null && ni.getName().startsWith("e")) {
+						if (ni.getName() != null && (ni.getName().startsWith("e") || ni.getName().startsWith("w"))) {
 							byte[] ha = ni.getHardwareAddress();
 							if (ha != null) {
 								Enumeration<InetAddress> ias = ni.getInetAddresses();

@@ -14,14 +14,14 @@
 	},
 
 	"mongoDbWriter" : {
-		"enabled" : false,
+		"enabled" : true,
 		"level" : "INFO",
 		"host" : "localhost",
 		"port" : 27017,
 		"ssl" : false,
 		"sslTrustAll" : false,
-		"database" : "logs",
-		"collection" : "units"
+		"database" : "apis_demo",
+		"collection" : "apisLog"
 	},
 
 	"watchdog" : {

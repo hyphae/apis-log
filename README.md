@@ -2,8 +2,7 @@
 
 ## Introduction
 
-apis-logはapis-main等がコミュニケーションラインにマルチキャストで出力する情報を受信しJSON形式に整えた上で  
-データベースに書き込みを行うソフトウェアである。
+apis-log is software for receiving data from apis-main by multicast via a communication line and storing that information in a database in JSON format.
 
 ![キャプチャ](https://user-images.githubusercontent.com/71874910/95825383-bb4d5000-0d6b-11eb-97ab-c0012842111c.PNG)
 
@@ -46,7 +45,7 @@ $ bash stop.sh
 
 ## Parameter Setting
 Set the following parameters in the exe folder as necessary.   
-Refer to "Chapter 6, About Configuration Files" in the [apis-log_specification](#anchor1) for more information.
+Refer to "Chapter 6, Configuration Files" in the [apis-log_specification](#anchor1) for more information.
 
 &emsp;config.json   
 &emsp;&emsp;&emsp;- communityId   &emsp;(default : oss_communityId)  

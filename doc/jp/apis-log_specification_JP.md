@@ -67,7 +67,7 @@ apis-logは以下のServiceを提供する。
 * Log Receiver  
   コミュニケーションライン上にUDPでマルチキャストされるapis-main等のLogを受信し、JSON形式に整えた上でMongoDBに保存するServiceである。
 
-![](media/media/image3.png)
+![](media/media/image3.png)  
 図3-2
 
 <br>

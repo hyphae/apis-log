@@ -59,6 +59,8 @@ Refer to "Chapter 6, Configuration Files" in the [apis-log_specification](#ancho
 
 <a id="anchor1"></a>
 ## Documentation
+&emsp;[apis-mian_log_specification(EN)](https://github.com/SonyCSL/apis-log/blob/main/doc/en/apis-log_specification_EN.md)  
+&emsp;[apis-mian_log_specification(JP)](https://github.com/SonyCSL/apis-log/blob/main/doc/jp/apis-log_specification_JP.md)
 
 
 

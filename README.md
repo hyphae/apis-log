@@ -62,6 +62,18 @@ Refer to "Chapter 6, Configuration Files" in the [apis-log_specification](#ancho
 &emsp;[apis-mian_log_specification(EN)](https://github.com/SonyCSL/apis-log/blob/main/doc/en/apis-log_specification_EN.md)  
 &emsp;[apis-mian_log_specification(JP)](https://github.com/SonyCSL/apis-log/blob/main/doc/jp/apis-log_specification_JP.md)
 
+## API Specification  
+
+An example of creating an API specification using the Javadoc command is shown below.  
+(For Ubuntu18.04)  
+  
+```bash  
+$ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/  
+$ cd apis-log  
+$ mvn javadoc:javadoc  
+```  
+
+The API specification is created in apis-main/target/site/apidocs/.  
 
 
 ## License

@@ -73,7 +73,7 @@ $ cd apis-log
 $ mvn javadoc:javadoc  
 ```  
 
-The API specification is created in apis-main/target/site/apidocs/.  
+The API specification is created in apis-log/target/site/apidocs/.  
 
 
 ## License

@@ -3,6 +3,8 @@ package jp.co.sony.csl.dcoes.apis.tools.log.util;
 import io.vertx.core.json.JsonObject;
 
 /**
+ * Holds received APIS log.
+ * @author OES Project
  * 受信した APIS のログを保持する.
  * @author OES Project
  */
@@ -17,6 +19,14 @@ public class ApisVertxLog {
 	public final String message;
 
 	/**
+	 * Creates instance.
+	 * @param programId Program ID
+	 * @param unitId Unit ID
+	 * @param threadName Thread name
+	 * @param dateTime Datetime string
+	 * @param level Log level
+	 * @param loggerName Logger name
+	 * @param message Log message
 	 * インスタンスを作成する.
 	 * @param programId プログラム ID
 	 * @param unitId ユニット ID

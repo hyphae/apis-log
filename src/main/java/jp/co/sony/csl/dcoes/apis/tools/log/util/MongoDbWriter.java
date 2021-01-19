@@ -16,6 +16,8 @@ import jp.co.sony.csl.dcoes.apis.common.util.vertx.JsonObjectUtil;
 import jp.co.sony.csl.dcoes.apis.common.util.vertx.VertxConfig;
 
 /**
+ * Stores received APIS log in MongoDB.
+ * @author OES Project
  * 受信した APIS のログを MongoDB に保存する.
  * @author OES Project
  */
@@ -34,6 +36,18 @@ public class MongoDbWriter {
 	private static String collection_ = null;
 
 	/**
+	 * Carries out initialization.
+	 * Gets settings from CONFIG and initializes.
+	 * - CONFIG.mongoDbWriter.enabled : Enable flag [{@link Boolean}]
+	 * - CONFIG.mongoDbWriter.level : Stored log level [{@link String}]
+	 * - CONFIG.mongoDbWriter.host : Host name [{@link String}]
+	 * - CONFIG.mongoDbWriter.port : Host [{@link Integer}]
+	 * - CONFIG.mongoDbWriter.ssl : SSL flag [{@link Boolean}]
+	 * - CONFIG.mongoDbWriter.sslTrustAll : OK flag for any SSL [{@link Boolean}]
+	 * - CONFIG.mongoDbWriter.database : Database name [{@link String}]
+	 * - CONFIG.mongoDbWriter.collection : Collection name [{@link String}]
+	 * @param vertx vertx object
+	 * @param completionHandler The completion handler
 	 * 初期化.
 	 * CONFIG から設定を取得し初期化する.
 	 * - CONFIG.mongoDbWriter.enabled : 有効フラグ [{@link Boolean}]
@@ -78,6 +92,9 @@ public class MongoDbWriter {
 	}
 
 	/**
+	 * Stores received packet in MongoDB.
+	 * This version just delivers the packets for processing and returns immediately without waiting for processing to complete.
+	 * @param value {@link DatagramPacket} object
 	 * 受信したパケットを MongoDB に保存する.
 	 * 処理を投げっぱなしですぐに戻るバージョン.
 	 * @param value {@link DatagramPacket} オブジェクト
@@ -86,6 +103,10 @@ public class MongoDbWriter {
 		write(value, r -> {});
 	}
 	/**
+	 * Stores received packet in MongoDB.
+	 * This version waits until processing is completed.
+	 * @param value Received {@link DatagramPacket} object
+	 * @param completionHandler The completion handler
 	 * 受信したパケットを MongoDB に保存する.
 	 * 処理が終わるまでまつバージョン.
 	 * @param value 受信した {@link DatagramPacket} オブジェクト
@@ -106,6 +127,7 @@ public class MongoDbWriter {
 				return;
 			}
 			if (level != null && level_.intValue() <= level.intValue()) {
+				// Does not save because if you try to save a MongoDB error, an infinite error loop can occur (lame)    
 				// MongoDB のエラーを保存しようとすると無限にエラーが起きてしまう可能性があるので保存しない ( ダサい )
 				if (loggername == null || !loggername.startsWith("org.mongodb.")) {
 					write_(json, completionHandler);
@@ -118,6 +140,9 @@ public class MongoDbWriter {
 		}
 	}
 	/**
+	 * Creates a {@link JsonObject} object for storing information in MongoDB from the received packet.
+	 * @param value Receive {@link DatagramPacket} object
+	 * @return {@link JsonObject} object to be stored in MongoDB
 	 * 受信したパケットから MongoDB に保存するための {@link JsonObject} オブジェクトを生成する.
 	 * @param value 受信した {@link DatagramPacket} オブジェクト
 	 * @return MongoDB に保存する {@link JsonObject} オブジェクト
@@ -128,6 +153,7 @@ public class MongoDbWriter {
 		result.put("communityId", VertxConfig.communityId());
 		result.put("clusterId", VertxConfig.clusterId());
 		String content = String.valueOf(value.data()).trim();
+		// Parses the content of packet and extracts log information
 		// パケットの中身をパースしログ情報を取り出す
 		ApisVertxLog log = ApisVertxLogParser.parse(content);
 		if (log != null) {
@@ -149,6 +175,9 @@ public class MongoDbWriter {
 		return result;
 	}
 	/**
+	 * Parses the log level.
+	 * @param value {@link JsonObject} object parsed from the received packet
+	 * @return Log level
 	 * ログレベルをパースする.
 	 * @param value 受信したパケットをパースした {@link JsonObject} オブジェクト
 	 * @return ログレベル
@@ -161,6 +190,9 @@ public class MongoDbWriter {
 		return Level.SEVERE;
 	}
 	/**
+	 * Stores {@link JsonObject} in MongoDB.
+	 * @param value {@link JsonObject} data
+	 * @param completionHandler The completion handler
 	 * {@link JsonObject} を MongoDB に保存する.
 	 * @param value {@link JsonObject} データ
 	 * @param completionHandler the completion handler

@@ -21,6 +21,9 @@ import jp.co.sony.csl.dcoes.apis.common.util.vertx.VertxConfig;
 import jp.co.sony.csl.dcoes.apis.tools.log.util.MongoDbWriter;
 
 /**
+ * This Verticle receives and processes logs of the APIS program, which are multicast via UDP.
+ * Started from {@link jp.co.sony.csl.dcoes.apis.tools.log.util.Starter} Verticle.
+ * @author OES Project
  * UDP でマルチキャストされる APIS プログラムのログを受信し処理する Verticle.
  * {@link jp.co.sony.csl.dcoes.apis.tools.log.util.Starter} Verticle から起動される.
  * @author OES Project
@@ -34,6 +37,11 @@ public class LogReceiver extends AbstractVerticle {
 	private static final Integer DEFAULT_PORT = Integer.valueOf(8888);
 
 	/**
+	 * Called during startup.
+	 * Calls initialization of MongoDB.
+	 * Calls initialization of network surroundings.
+	 * @param startFuture {@inheritDoc}
+	 * @throws Exception {@inheritDoc}
 	 * 起動時に呼び出される.
 	 * MongoDB の初期化を呼び出す.
 	 * ネットワークまわりの初期化を呼び出す.
@@ -58,7 +66,9 @@ public class LogReceiver extends AbstractVerticle {
 	}
 
 	/**
-	 * 停止時に呼び出される.
+	 * Called when stopped.
+	 * @throws Exception {@inheritDoc}
+	 * 停止時に呼び出される. 
 	 * @throws Exception {@inheritDoc}
 	 */
 	@Override public void stop() throws Exception {
@@ -68,6 +78,13 @@ public class LogReceiver extends AbstractVerticle {
 	////
 
 	/**
+	 * Initalizes network surroundings.
+	 * Gets settings from CONFIG and initializes.
+	 * - CONFIG.logReceiver.ipv6 : IPv6 flog. If true then IPv6 [{@link Boolean}]
+	 * - CONFIG.logReceiver.multicastGroupAddress : Multicast group address [{@link String}]
+	 * - CONFIG.logReceiver.port : Port [{@link Integer}]
+	 * - CONFIG.logReceiver.printToStdout : Standard output flag. If true then output received log to standard output [{@link Boolean}]
+	 * @param completionHandler The completion handler
 	 * ネットワークまわりの初期化.
 	 * CONFIG から設定を取得し初期化する.
 	 * - CONFIG.logReceiver.ipv6 : IPv6 フラグ. true なら IPv6 [{@link Boolean}]
@@ -98,6 +115,7 @@ public class LogReceiver extends AbstractVerticle {
 				if (log.isInfoEnabled()) log.info("listenAddress : " + listenAddress);
 				if (log.isInfoEnabled()) log.info("networkInterfaceName : " + networkInterfaceName);
 				socket.handler(packet -> {
+					// Processing when packet is received
 					// パケット受信時の処理
 					MongoDbWriter.write(packet);
 					if (printToStdout) System.out.println("[" + packet.sender() + "] " + String.valueOf(packet.data()).trim());

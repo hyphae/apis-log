@@ -456,10 +456,6 @@ apis-log経由で取得できる情報が、個人情報に該当するかは導
 <td>動作ソフトウェア</td>
 <td>AdoptOpenJDK (32/64bit)</td>
 </tr>
-<tr class="odd">
-<td>OSSライセンス</td>
-<td>GPL等のコピーレフト型ライセンスの影響を避けるため、それらのライセンスを持つソフトウェアとapis-logが1つの実行ファイルとなるOSは禁止 (例:RTOS)</td>
-</tr>
 <tr class="even">
 <td rowspan="5">その他</td>
 <td>OS起動時にapis-log等の自動実行が行えること</td>

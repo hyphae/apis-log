@@ -463,10 +463,6 @@ The OS requirements for IoT boards used with apis-log use are described below.
 <td>Operating software</td>
 <td>AdoptOpenJDK (32/64bit)</td>
 </tr>
-<tr class="odd">
-<td>OSS licensing</td>
-<td>To avoid the effects of copyleft licenses such as GPL, it is prohibited to use an OS that run software covered by such licenses together with apis-log as a single executable file (RTOS, etc.).</td>
-</tr>
 <tr class="even">
 <td rowspan="5">Other</td>
 <td>It shall be possible to run apis-ccc automatically when the OS boots.</td>

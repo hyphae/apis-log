@@ -43,7 +43,7 @@ jobs:
         run: |
           git clone https://github.com/hyphae/apis-bom.git ../apis-bom
           cd ../apis-bom
-          mvn -B clean install -DskipTests
+          mvn -B clean install
 
       - name: Clone and build apis-common
         run: |
@@ -51,7 +51,7 @@ jobs:
           cd ../apis-common
           BOM_VERSION=$(grep -oP '<version>\K[^<]+' ../apis-bom/pom.xml | head -1)
           sed -i "s/<version>3.0.0<\\/version>/<version>$BOM_VERSION<\\/version>/" pom.xml
-          mvn -B clean install -DskipTests
+          mvn -B clean install
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
@@ -60,7 +60,7 @@ jobs:
 
       - name: Build for CodeQL Analysis
         run: |
-          mvn -B clean compile -DskipTests
+          mvn -B clean compile test-compile
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2

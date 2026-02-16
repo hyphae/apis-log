@@ -3,8 +3,9 @@ package jp.co.sony.csl.dcoes.apis.tools.log.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Parses received APIS log.

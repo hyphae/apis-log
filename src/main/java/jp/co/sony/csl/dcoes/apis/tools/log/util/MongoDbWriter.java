@@ -6,8 +6,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.vertx.ext.mongo.MongoClient;
 
 import java.util.logging.Level;
@@ -67,7 +67,7 @@ public class MongoDbWriter {
 			try {
 				level_ = Level.parse(VertxConfig.config.getString(DEFAULT_LEVEL, "mongoDbWriter", "level"));
 			} catch (Exception e) {
-				log.error(e);
+				log.error("Failed to process data", e);
 				completionHandler.handle(Future.failedFuture(e));
 				return;
 			}
@@ -122,7 +122,7 @@ public class MongoDbWriter {
 				level = level_(json);
 				loggername = json.getString("loggername");
 			} catch (Exception e) {
-				log.error(e);
+				log.error("Error in MongoDB operation", e);
 				completionHandler.handle(Future.failedFuture(e));
 				return;
 			}

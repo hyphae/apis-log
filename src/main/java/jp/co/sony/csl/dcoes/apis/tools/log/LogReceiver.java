@@ -7,8 +7,8 @@ import io.vertx.core.Promise;
 import io.vertx.core.Handler;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -179,7 +179,7 @@ public class LogReceiver extends AbstractVerticle {
 				}
 			}
 		} catch (SocketException e) {
-			log.error(e);
+			log.error("Socket exception while getting network interface", e);
 			completionHandler.handle(Future.failedFuture(e));
 			return;
 		}

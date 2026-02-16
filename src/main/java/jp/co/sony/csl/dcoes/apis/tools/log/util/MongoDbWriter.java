@@ -198,7 +198,7 @@ public class MongoDbWriter {
 	 * @param completionHandler the completion handler
 	 */
 	public static void write_(JsonObject value, Handler<AsyncResult<Void>> completionHandler) {
-		client_.insert(collection_, value, res -> {
+		client_.insert(collection_, value).onComplete(res -> {
 			if (res.succeeded()) {
 				completionHandler.handle(Future.succeededFuture());
 			} else {

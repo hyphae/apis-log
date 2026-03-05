@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+
 package jp.co.sony.csl.dcoes.apis.tools.log;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
+
 import io.vertx.core.Handler;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
@@ -49,19 +51,19 @@ public class LogReceiver extends AbstractVerticle {
 	 * @param startPromise {@inheritDoc}
 	 * @throws Exception {@inheritDoc}
 	 */
-	@Override public void start(Promise<Void> startPromise) throws Exception {
+	@Override public void start(Future<Void> startFuture) throws Exception {
 		MongoDbWriter.initialize(vertx, resInitializeMongoDbWriter -> {
 			if (resInitializeMongoDbWriter.succeeded()) {
 				startSocketService_(resSocket -> {
 					if (resSocket.succeeded()) {
 						if (log.isTraceEnabled()) log.trace("started : " + deploymentID());
-						startPromise.complete();
+						startFuture.complete();
 					} else {
-						startPromise.fail(resSocket.cause());
+						startFuture.fail(resSocket.cause());
 					}
 				});
 			} else {
-				startPromise.fail(resInitializeMongoDbWriter.cause());
+				startFuture.fail(resInitializeMongoDbWriter.cause());
 			}
 		});
 	}

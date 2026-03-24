@@ -7,7 +7,6 @@ import io.vertx.core.Promise;
 import io.vertx.core.Handler;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
-import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +69,11 @@ public class LogReceiver extends AbstractVerticle {
                 if (log.isInfoEnabled()) log.info("listenAddress : " + listenAddress);
                 if (log.isInfoEnabled()) log.info("networkInterfaceName : " + networkInterfaceName);
                 socket.handler(packet -> {
-                    MongoDbWriter.write(new JsonObject(packet.data().toString()));
+                    MongoDbWriter.write(packet);
                     if (printToStdout) System.out.println("[" + packet.sender() + "] " + String.valueOf(packet.data()).trim());
                 }).exceptionHandler(t -> {
                     log.error("exceptionHandler : " + t);
-                }).listen(port, listenAddress).onComplete(resListen -> {
+                }).listen(port, listenAddress, resListen -> {
                     if (resListen.succeeded()) {
                         socket.listenMulticastGroup(multicastGroupAddress).onComplete(resListenMulticastGroup -> {
                             if (resListenMulticastGroup.succeeded()) {

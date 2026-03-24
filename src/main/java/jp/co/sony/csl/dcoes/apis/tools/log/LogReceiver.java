@@ -30,7 +30,7 @@ public class LogReceiver extends AbstractVerticle {
     private static final String DEFAULT_PORT = "8888";
 
     @Override
-    public void start(Promise<Void> startPromise) throws Exception {
+    public void start(Promise<Void> startPromise) throws Exception throws Exception {
         initializeMongoDbWriter_(resInitializeMongoDbWriter -> {
             if (resInitializeMongoDbWriter.succeeded()) {
                 startSocketService_(startPromise);

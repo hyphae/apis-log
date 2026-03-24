@@ -49,7 +49,7 @@ public class MongoDbWriter {
             completionHandler.handle(Future.succeededFuture());
             return;
         }
-        client_.insert(collection_, value, res -> {
+        client_.insert(collection_, value).setHandler(res -> {
             if (res.succeeded()) {
                 completionHandler.handle(Future.succeededFuture());
             } else {

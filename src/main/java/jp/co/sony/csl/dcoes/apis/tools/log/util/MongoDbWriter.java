@@ -3,6 +3,7 @@ package jp.co.sony.csl.dcoes.apis.tools.log.util;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ public class MongoDbWriter {
     private static MongoClient client_;
     private static String collection_;
 
-    public static void initialize(Handler<AsyncResult<Void>> completionHandler) {
+    public static void initialize(Vertx vertx, Handler<AsyncResult<Void>> completionHandler) {
         boolean enabled = VertxConfig.config.getBoolean(false, "mongoDbWriter", "enabled");
         if (!enabled) {
             completionHandler.handle(Future.succeededFuture());
@@ -33,7 +34,7 @@ public class MongoDbWriter {
             .put("db_name", dbName)
             .put("useSSL", ssl);
         
-        client_ = MongoClient.createShared(VertxConfig.vertx, config);
+        client_ = MongoClient.createShared(vertx, config);
         completionHandler.handle(Future.succeededFuture());
     }
 

@@ -19,6 +19,7 @@ import java.util.Enumeration;
 
 import jp.co.sony.csl.dcoes.apis.common.util.vertx.JsonObjectUtil;
 import jp.co.sony.csl.dcoes.apis.common.util.vertx.VertxConfig;
+import jp.co.sony.csl.dcoes.apis.tools.log.util.MongoDbWriter;
 
 public class LogReceiver extends AbstractVerticle {
 
@@ -33,7 +34,13 @@ public class LogReceiver extends AbstractVerticle {
     public void start(Promise<Void> startPromise) throws Exception {
         initializeMongoDbWriter_(resInitializeMongoDbWriter -> {
             if (resInitializeMongoDbWriter.succeeded()) {
-                startSocketService_(startPromise);
+                startSocketService_(res -> {
+                    if (res.succeeded()) {
+                        startPromise.complete();
+                    } else {
+                        startPromise.fail(res.cause());
+                    }
+                });
             } else {
                 startPromise.fail(resInitializeMongoDbWriter.cause());
             }
@@ -125,6 +132,6 @@ public class LogReceiver extends AbstractVerticle {
     }
 
     private void initializeMongoDbWriter_(Handler<AsyncResult<Void>> completionHandler) {
-        MongoDbWriter.initialize(completionHandler);
+        MongoDbWriter.initialize(vertx, completionHandler);
     }
 }

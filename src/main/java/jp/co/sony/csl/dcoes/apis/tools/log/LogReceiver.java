@@ -7,8 +7,8 @@ import io.vertx.core.Promise;
 import io.vertx.core.Handler;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -19,175 +19,112 @@ import java.util.Enumeration;
 
 import jp.co.sony.csl.dcoes.apis.common.util.vertx.JsonObjectUtil;
 import jp.co.sony.csl.dcoes.apis.common.util.vertx.VertxConfig;
-import jp.co.sony.csl.dcoes.apis.tools.log.util.MongoDbWriter;
 
-/**
- * This Verticle receives and processes logs of the APIS program, which are multicast via UDP.
- * Started from {@link jp.co.sony.csl.dcoes.apis.tools.log.util.Starter} Verticle.
- * @author OES Project
- * UDP でマルチキャストされる APIS プログラムのログを受信し処理する Verticle.
- * {@link jp.co.sony.csl.dcoes.apis.tools.log.util.Starter} Verticle から起動される.
- * @author OES Project
- */
 public class LogReceiver extends AbstractVerticle {
-	private static final Logger log = LoggerFactory.getLogger(LogReceiver.class);
 
-	private static final Boolean DEFAULT_IPV6 = Boolean.TRUE;
-	private static final String DEFAULT_MULTICAST_GROUP_ADDRESS_V4 = "224.2.2.4";
-	private static final String DEFAULT_MULTICAST_GROUP_ADDRESS_V6 = "FF02:0:0:0:0:0:0:1";
-	private static final Integer DEFAULT_PORT = Integer.valueOf(8888);
+    private static final Logger log = LoggerFactory.getLogger(LogReceiver.class);
 
-	/**
-	 * Called during startup.
-	 * Calls initialization of MongoDB.
-	 * Calls initialization of network surroundings.
-	 * @param startPromise {@inheritDoc}
-	 * @throws Exception {@inheritDoc}
-	 * 起動時に呼び出される.
-	 * MongoDB の初期化を呼び出す.
-	 * ネットワークまわりの初期化を呼び出す.
-	 * @param startPromise {@inheritDoc}
-	 * @throws Exception {@inheritDoc}
-	 */
-	@Override public void start(Promise<Void> startPromise) throws Exception {
-		MongoDbWriter.initialize(vertx, resInitializeMongoDbWriter -> {
-			if (resInitializeMongoDbWriter.succeeded()) {
-				startSocketService_(resSocket -> {
-					if (resSocket.succeeded()) {
-						if (log.isTraceEnabled()) log.trace("started : " + deploymentID());
-						startPromise.complete();
-					} else {
-						startPromise.fail(resSocket.cause());
-					}
-				});
-			} else {
-				startPromise.fail(resInitializeMongoDbWriter.cause());
-			}
-		});
-	}
+    private static final String DEFAULT_IPV6 = Boolean.FALSE.toString();
+    private static final String DEFAULT_MULTICAST_GROUP_ADDRESS_V4 = "224.0.0.1";
+    private static final String DEFAULT_MULTICAST_GROUP_ADDRESS_V6 = "FF01::1";
+    private static final String DEFAULT_PORT = "8888";
 
-	/**
-	 * Called when stopped.
-	 * @throws Exception {@inheritDoc}
-	 * 停止時に呼び出される. 
-	 * @throws Exception {@inheritDoc}
-	 */
-	@Override public void stop() throws Exception {
-		if (log.isTraceEnabled()) log.trace("stopped : " + deploymentID());
-	}
+    @Override
+    public void start(Promise<Void> startPromise) throws Exception {
+        initializeMongoDbWriter_(resInitializeMongoDbWriter -> {
+            if (resInitializeMongoDbWriter.succeeded()) {
+                startSocketService_(startPromise);
+            } else {
+                startPromise.fail(resInitializeMongoDbWriter.cause());
+            }
+        });
+    }
 
-	////
+    private void startSocketService_(Handler<AsyncResult<Void>> completionHandler) {
+        Boolean ipv6 = VertxConfig.config.getBoolean(DEFAULT_IPV6, "logReceiver", "ipv6");
+        String multicastGroupAddress = (ipv6) ? VertxConfig.config.getString(new JsonObjectUtil.DefaultString(DEFAULT_MULTICAST_GROUP_ADDRESS_V6), "logReceiver", "multicastGroupAddress") : VertxConfig.config.getString(new JsonObjectUtil.DefaultString(DEFAULT_MULTICAST_GROUP_ADDRESS_V4), "logReceiver", "multicastGroupAddress");
+        Integer port = VertxConfig.config.getInteger(DEFAULT_PORT, "logReceiver", "port");
+        String listenAddress = (ipv6) ? "::" : "0.0.0.0";
+        Boolean printToStdout = VertxConfig.config.getBoolean(Boolean.FALSE, "logReceiver", "printToStdout");
+        findNetworkInterfaceName_(ipv6, multicastGroupAddress, resNetworkInterfaceName -> {
+            if (resNetworkInterfaceName.succeeded()) {
+                String networkInterfaceName = resNetworkInterfaceName.result();
+                DatagramSocket socket;
+                try {
+                    socket = vertx.createDatagramSocket(new DatagramSocketOptions().setReuseAddress(true).setReusePort(true).setIpV6(ipv6));
+                } catch (Exception e) {
+                    completionHandler.handle(Future.failedFuture(e));
+                    return;
+                }
+                if (log.isInfoEnabled()) log.info("ipv6 : " + ipv6);
+                if (log.isInfoEnabled()) log.info("multicastGroupAddress : " + multicastGroupAddress);
+                if (log.isInfoEnabled()) log.info("port : " + port);
+                if (log.isInfoEnabled()) log.info("listenAddress : " + listenAddress);
+                if (log.isInfoEnabled()) log.info("networkInterfaceName : " + networkInterfaceName);
+                socket.handler(packet -> {
+                    MongoDbWriter.write(packet);
+                    if (printToStdout) System.out.println("[" + packet.sender() + "] " + String.valueOf(packet.data()).trim());
+                }).exceptionHandler(t -> {
+                    log.error("exceptionHandler : " + t);
+                }).listen(port, listenAddress, resListen -> {
+                    if (resListen.succeeded()) {
+                        socket.listenMulticastGroup(multicastGroupAddress, networkInterfaceName, null, resListenMulticastGroup -> {
+                            if (resListenMulticastGroup.succeeded()) {
+                                if (log.isInfoEnabled()) log.info("log receive multicast service started on group address : " + multicastGroupAddress + ", port : " + port);
+                                completionHandler.handle(Future.succeededFuture());
+                            } else {
+                                completionHandler.handle(Future.failedFuture(resListenMulticastGroup.cause()));
+                            }
+                        });
+                    } else {
+                        completionHandler.handle(Future.failedFuture(resListen.cause()));
+                    }
+                });
+            } else {
+                completionHandler.handle(Future.failedFuture(resNetworkInterfaceName.cause()));
+            }
+        });
+    }
 
-	/**
-	 * Initalizes network surroundings.
-	 * Gets settings from CONFIG and initializes.
-	 * - CONFIG.logReceiver.ipv6 : IPv6 flog. If true then IPv6 [{@link Boolean}]
-	 * - CONFIG.logReceiver.multicastGroupAddress : Multicast group address [{@link String}]
-	 * - CONFIG.logReceiver.port : Port [{@link Integer}]
-	 * - CONFIG.logReceiver.printToStdout : Standard output flag. If true then output received log to standard output [{@link Boolean}]
-	 * @param completionHandler The completion handler
-	 * ネットワークまわりの初期化.
-	 * CONFIG から設定を取得し初期化する.
-	 * - CONFIG.logReceiver.ipv6 : IPv6 フラグ. true なら IPv6 [{@link Boolean}]
-	 * - CONFIG.logReceiver.multicastGroupAddress : マルチキャストグループアドレス [{@link String}]
-	 * - CONFIG.logReceiver.port : ポート [{@link Integer}]
-	 * - CONFIG.logReceiver.printToStdout : 標準出力フラグ. true なら受信したログを標準出力に出力する [{@link Boolean}]
-	 * @param completionHandler the completion handler
-	 */
-	private void startSocketService_(Handler<AsyncResult<Void>> completionHandler) {
-		Boolean ipv6 = VertxConfig.config.getBoolean(DEFAULT_IPV6, "logReceiver", "ipv6");
-		String multicastGroupAddress = (ipv6) ? VertxConfig.config.getString(new JsonObjectUtil.DefaultString(DEFAULT_MULTICAST_GROUP_ADDRESS_V6), "logReceiver", "multicastGroupAddress") : VertxConfig.config.getString(new JsonObjectUtil.DefaultString(DEFAULT_MULTICAST_GROUP_ADDRESS_V4), "logReceiver", "multicastGroupAddress");
-		Integer port = VertxConfig.config.getInteger(DEFAULT_PORT, "logReceiver", "port");
-		String listenAddress = (ipv6) ? "::" : "0.0.0.0";
-		Boolean printToStdout = VertxConfig.config.getBoolean(Boolean.FALSE, "logReceiver", "printToStdout");
-		findNetworkInterfaceName_(ipv6, multicastGroupAddress, resNetworkInterfaceName -> {
-			if (resNetworkInterfaceName.succeeded()) {
-				String networkInterfaceName = resNetworkInterfaceName.result();
-				DatagramSocket socket;
-				try {
-					socket = vertx.createDatagramSocket(new DatagramSocketOptions().setReuseAddress(true).setReusePort(true).setIpV6(ipv6));
-				} catch (Exception e) {
-					completionHandler.handle(Future.failedFuture(e));
-					return;
-				}
-				if (log.isInfoEnabled()) log.info("ipv6 : " + ipv6);
-				if (log.isInfoEnabled()) log.info("multicastGroupAddress : " + multicastGroupAddress);
-				if (log.isInfoEnabled()) log.info("port : " + port);
-				if (log.isInfoEnabled()) log.info("listenAddress : " + listenAddress);
-				if (log.isInfoEnabled()) log.info("networkInterfaceName : " + networkInterfaceName);
-				socket.handler(packet -> {
-					// Processing when packet is received
-					// パケット受信時の処理
-					MongoDbWriter.write(packet);
-					if (printToStdout) System.out.println("[" + packet.sender() + "] " + String.valueOf(packet.data()).trim());
-				}).exceptionHandler(t -> {
-					log.error("exceptionHandler : " + t);
-                                }).listen(port, listenAddress, resListen -> {
-					if (resListen.succeeded()) {
-                                                socket.listenMulticastGroup(multicastGroupAddress, networkInterfaceName, null, resListenMulticastGroup -> {
-							if (resListenMulticastGroup.succeeded()) {
-								if (log.isInfoEnabled()) log.info("log receive multicast service started on group address : " + multicastGroupAddress + ", port : " + port);
-								completionHandler.handle(Future.succeededFuture());
-							} else {
-								completionHandler.handle(Future.failedFuture(resListenMulticastGroup.cause()));
-							}
-						});
-					} else {
-						completionHandler.handle(Future.failedFuture(resListen.cause()));
-					}
-				});
-			} else {
-				completionHandler.handle(Future.failedFuture(resNetworkInterfaceName.cause()));
-			}
-		});
-	}
-	private void findNetworkInterfaceName_(boolean isIpv6, String multicastGroupAddress, Handler<AsyncResult<String>> completionHandler) {
-		if (isIpv6) {
-			int pos = multicastGroupAddress.lastIndexOf('%');
-			if (0 <= pos) {
-				completionHandler.handle(Future.succeededFuture(multicastGroupAddress.substring(pos + 1)));
-				return;
-			}
-		}
-		String result = null;
-		try {
-			Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
-			if (nis != null) {
-				outside: while (nis.hasMoreElements()) {
-					NetworkInterface ni = nis.nextElement();
-					if (!ni.isLoopback() && ni.isUp()) {
-						if (ni.getName() != null && (ni.getName().startsWith("e") || ni.getName().startsWith("w"))) {
-							byte[] ha = ni.getHardwareAddress();
-							if (ha != null) {
-								Enumeration<InetAddress> ias = ni.getInetAddresses();
-								if (ias != null) {
-									while (ias.hasMoreElements()) {
-										InetAddress ia = ias.nextElement();
-										if (isIpv6 && ia instanceof Inet6Address) {
-											result = ni.getName();
-											break outside;
-										}
-										if (!isIpv6 && ia instanceof Inet4Address) {
-											result = ni.getName();
-											break outside;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		} catch (SocketException e) {
-			log.error(e);
-			completionHandler.handle(Future.failedFuture(e));
-			return;
-		}
-		if (result != null) {
-			completionHandler.handle(Future.succeededFuture(result));
-		} else {
-			completionHandler.handle(Future.failedFuture("no network interface name found"));
-		}
-	}
+    private void findNetworkInterfaceName_(Boolean ipv6, String multicastGroupAddress, Handler<AsyncResult<String>> completionHandler) {
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            if (networkInterfaces != null) {
+                while (networkInterfaces.hasMoreElements()) {
+                    NetworkInterface networkInterface = networkInterfaces.nextElement();
+                    Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                    if (addresses != null) {
+                        while (addresses.hasMoreElements()) {
+                            InetAddress address = addresses.nextElement();
+                            if (!address.isLoopbackAddress()) {
+                                if (ipv6 && address instanceof Inet6Address) {
+                                    if (address.isMulticastAddress()) {
+                                        if (log.isInfoEnabled()) log.info("found IPv6 multicast address : " + address);
+                                        completionHandler.handle(Future.succeededFuture(networkInterface.getName()));
+                                        return;
+                                    }
+                                } else if (!ipv6 && address instanceof Inet4Address) {
+                                    if (address.isMulticastAddress()) {
+                                        if (log.isInfoEnabled()) log.info("found IPv4 multicast address : " + address);
+                                        completionHandler.handle(Future.succeededFuture(networkInterface.getName()));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                completionHandler.handle(Future.succeededFuture(null));
+            } else {
+                completionHandler.handle(Future.failedFuture("no network interface found"));
+            }
+        } catch (SocketException e) {
+            log.error("Socket exception while getting network interface", e);
+            completionHandler.handle(Future.failedFuture(e));
+        }
+    }
 
+    private void initializeMongoDbWriter_(Handler<AsyncResult<Void>> completionHandler) {
+        MongoDbWriter.initialize(completionHandler);
+    }
 }

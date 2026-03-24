@@ -26,7 +26,7 @@ public class Starter extends AbstractStarter {
 	 * 起動時に {@link AbstractStarter#start(Future)} から呼び出される.
 	 */
 	@Override protected void doStart(Handler<AsyncResult<Void>> completionHandler) {
-		vertx.deployVerticle(new LogReceiver(), resLogReceiver -> {
+        vertx.deployVerticle(new LogReceiver(), resLogReceiver -> {
 			if (resLogReceiver.succeeded()) {
 				completionHandler.handle(Future.succeededFuture());
 			} else {

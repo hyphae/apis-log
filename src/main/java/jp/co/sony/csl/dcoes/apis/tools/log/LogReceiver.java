@@ -74,9 +74,9 @@ public class LogReceiver extends AbstractVerticle {
                     if (printToStdout) System.out.println("[" + packet.sender() + "] " + String.valueOf(packet.data()).trim());
                 }).exceptionHandler(t -> {
                     log.error("exceptionHandler : " + t);
-                }).listen(port, listenAddress).setHandler(resListen -> {
+                }).listen(port, listenAddress).onComplete(resListen -> {
                     if (resListen.succeeded()) {
-                        socket.listenMulticastGroup(multicastGroupAddress).setHandler(resListenMulticastGroup -> {
+                        socket.listenMulticastGroup(multicastGroupAddress).onComplete(resListenMulticastGroup -> {
                             if (resListenMulticastGroup.succeeded()) {
                                 if (log.isInfoEnabled()) log.info("log receive multicast service started on group address : " + multicastGroupAddress + ", port : " + port);
                                 completionHandler.handle(Future.succeededFuture());

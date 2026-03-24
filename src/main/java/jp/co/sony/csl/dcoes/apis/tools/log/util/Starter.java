@@ -13,7 +13,7 @@ public class Starter extends AbstractStarter {
 
     @Override
     protected void doStart(Handler<AsyncResult<Void>> completionHandler) {
-        vertx.deployVerticle(new LogReceiver()).setHandler(resLogReceiver -> {
+        vertx.deployVerticle(new LogReceiver()).onComplete(resLogReceiver -> {
             if (resLogReceiver.succeeded()) {
                 completionHandler.handle(Future.succeededFuture());
             } else {

@@ -36,6 +36,7 @@ public class LogReceiver extends AbstractVerticle {
             if (resInitializeMongoDbWriter.succeeded()) {
                 startSocketService_(res -> {
                     if (res.succeeded()) {
+                        if (log.isTraceEnabled()) log.trace("started : " + deploymentID());
                         startPromise.complete();
                     } else {
                         startPromise.fail(res.cause());
@@ -45,6 +46,11 @@ public class LogReceiver extends AbstractVerticle {
                 startPromise.fail(resInitializeMongoDbWriter.cause());
             }
         });
+    }
+
+    @Override
+    public void stop() throws Exception {
+        if (log.isTraceEnabled()) log.trace("stopped : " + deploymentID());
     }
 
     private void startSocketService_(Handler<AsyncResult<Void>> completionHandler) {

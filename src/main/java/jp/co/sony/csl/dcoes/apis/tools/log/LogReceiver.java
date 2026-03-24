@@ -28,11 +28,16 @@ public class LogReceiver extends AbstractVerticle {
     private static final String DEFAULT_MULTICAST_GROUP_ADDRESS_V4 = "224.0.0.1";
     private static final String DEFAULT_MULTICAST_GROUP_ADDRESS_V6 = "FF01::1";
     private static final String DEFAULT_PORT = "8888";
-
     @Override
-    public void start(Promise<Void> startPromise) throws Exception throws Exception {
+    public void start(Promise<Void> startPromise) throws Exception {
         initializeMongoDbWriter_(resInitializeMongoDbWriter -> {
             if (resInitializeMongoDbWriter.succeeded()) {
+                startSocketService_(startPromise);
+            } else {
+                startPromise.fail(resInitializeMongoDbWriter.cause());
+            }
+        });
+    }
                 startSocketService_(startPromise);
             } else {
                 startPromise.fail(resInitializeMongoDbWriter.cause());

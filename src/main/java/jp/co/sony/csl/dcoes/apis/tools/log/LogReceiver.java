@@ -51,7 +51,7 @@ public class LogReceiver extends AbstractVerticle {
     private void startSocketService_(Handler<AsyncResult<Void>> completionHandler) {
         Boolean ipv6 = VertxConfig.config.getBoolean(DEFAULT_IPV6, "logReceiver", "ipv6");
         String multicastGroupAddress = (ipv6) ? VertxConfig.config.getString(new JsonObjectUtil.DefaultString(DEFAULT_MULTICAST_GROUP_ADDRESS_V6), "logReceiver", "multicastGroupAddress") : VertxConfig.config.getString(new JsonObjectUtil.DefaultString(DEFAULT_MULTICAST_GROUP_ADDRESS_V4), "logReceiver", "multicastGroupAddress");
-        Integer port = VertxConfig.config.getInteger(DEFAULT_PORT, "logReceiver", "port");
+        int port = VertxConfig.config.getInteger(DEFAULT_PORT, "logReceiver", "port");
         String listenAddress = (ipv6) ? "::" : "0.0.0.0";
         Boolean printToStdout = VertxConfig.config.getBoolean(Boolean.FALSE, "logReceiver", "printToStdout");
         findNetworkInterfaceName_(ipv6, multicastGroupAddress, resNetworkInterfaceName -> {

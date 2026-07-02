@@ -122,7 +122,7 @@ public class MongoDbWriter {
 				level = level_(json);
 				loggername = json.getString("loggername");
 			} catch (Exception e) {
-				log.error(e);
+				log.error("Error occurred while parsing log level", e);
 				completionHandler.handle(Future.failedFuture(e));
 				return;
 			}

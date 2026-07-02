@@ -179,7 +179,7 @@ public class LogReceiver extends AbstractVerticle {
 				}
 			}
 		} catch (SocketException e) {
-			log.error(e);
+			log.error("Socket exception occurred", e);
 			completionHandler.handle(Future.failedFuture(e));
 			return;
 		}

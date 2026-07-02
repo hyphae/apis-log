@@ -6,8 +6,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import io.vertx.ext.mongo.MongoClient;
 
 import java.util.logging.Level;
@@ -67,7 +67,7 @@ public class MongoDbWriter {
 			try {
 				level_ = Level.parse(VertxConfig.config.getString(DEFAULT_LEVEL, "mongoDbWriter", "level"));
 			} catch (Exception e) {
-				log.error(e);
+				log.error("Error occurred while parsing log level", e);
 				completionHandler.handle(Future.failedFuture(e));
 				return;
 			}
@@ -80,13 +80,13 @@ public class MongoDbWriter {
 			if (ssl) config.put("trustAll", sslTrustAll);
 			client_ = MongoClient.createShared(vertx, config);
 			collection_ = VertxConfig.config.getString("mongoDbWriter", "collection");
-			if (log.isInfoEnabled()) log.info("level : " + level_);
-			if (log.isInfoEnabled()) log.info("host : " + host);
-			if (log.isInfoEnabled()) log.info("port : " + port);
-			if (log.isInfoEnabled()) log.info("ssl : " + ssl);
-			if (ssl) if (log.isInfoEnabled()) log.info("sslTrustAll : " + sslTrustAll);
-			if (log.isInfoEnabled()) log.info("database : " + database);
-			if (log.isInfoEnabled()) log.info("collection : " + collection_);
+			if (log.isInfoEnabled()) log.info("level : {}", level_);
+			if (log.isInfoEnabled()) log.info("host : {}", host);
+			if (log.isInfoEnabled()) log.info("port : {}", port);
+			if (log.isInfoEnabled()) log.info("ssl : {}", ssl);
+			if (ssl) if (log.isInfoEnabled()) log.info("sslTrustAll : {}", sslTrustAll);
+			if (log.isInfoEnabled()) log.info("database : {}", database);
+			if (log.isInfoEnabled()) log.info("collection : {}", collection_);
 		}
 		completionHandler.handle(Future.succeededFuture());
 	}
@@ -202,7 +202,7 @@ public class MongoDbWriter {
 			if (res.succeeded()) {
 				completionHandler.handle(Future.succeededFuture());
 			} else {
-				log.error("Communication failed with MongoDB ; " + res.cause());
+				log.error("Communication failed with MongoDB", res.cause());
 				completionHandler.handle(Future.failedFuture(res.cause()));
 			}
 		});

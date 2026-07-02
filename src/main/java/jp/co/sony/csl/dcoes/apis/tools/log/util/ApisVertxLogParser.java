@@ -3,8 +3,8 @@ package jp.co.sony.csl.dcoes.apis.tools.log.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses received APIS log.
@@ -39,7 +39,7 @@ public class ApisVertxLogParser {
 		if (result != null) return result;
 		result = parse_v1_(value);
 		if (result != null) return result;
-		log.error("pattern matching failed, value : " + value);
+		log.error("pattern matching failed, value : {}", value);
 		return null;
 	}
 

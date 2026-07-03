@@ -53,7 +53,6 @@
   <build>
     <pluginManagement>
       <plugins>
-        <!-- We specify the Maven compiler plugin as we need to set it to Java 1.8 -->
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.14.1</version>

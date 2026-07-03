@@ -126,7 +126,7 @@ public class LogReceiver extends AbstractVerticle {
 					if (resListen.succeeded()) {
 						socket.listenMulticastGroup(multicastGroupAddress, networkInterfaceName, null, resListenMulticastGroup -> {
 							if (resListenMulticastGroup.succeeded()) {
-								if (log.isInfoEnabled()) log.info("log receive multicast service started on group address : {}", multicastGroupAddress);
+								if (log.isInfoEnabled()) log.info("log receive multicast service started on group address : {}, {}", multicastGroupAddress, port);
 								completionHandler.handle(Future.succeededFuture());
 							} else {
 								completionHandler.handle(Future.failedFuture(resListenMulticastGroup.cause()));

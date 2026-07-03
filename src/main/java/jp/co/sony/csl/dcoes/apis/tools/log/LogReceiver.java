@@ -7,8 +7,8 @@ import io.vertx.core.Promise;
 import io.vertx.core.Handler;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -54,7 +54,7 @@ public class LogReceiver extends AbstractVerticle {
 			if (resInitializeMongoDbWriter.succeeded()) {
 				startSocketService_(resSocket -> {
 					if (resSocket.succeeded()) {
-						if (log.isTraceEnabled()) log.trace("started : " + deploymentID());
+						if (log.isTraceEnabled()) log.trace("started : {}", deploymentID());
 						startPromise.complete();
 					} else {
 						startPromise.fail(resSocket.cause());
@@ -73,7 +73,7 @@ public class LogReceiver extends AbstractVerticle {
 	 * @throws Exception {@inheritDoc}
 	 */
 	@Override public void stop() throws Exception {
-		if (log.isTraceEnabled()) log.trace("stopped : " + deploymentID());
+		if (log.isTraceEnabled()) log.trace("stopped : {}", deploymentID());
 	}
 
 	////
@@ -110,23 +110,23 @@ public class LogReceiver extends AbstractVerticle {
 					completionHandler.handle(Future.failedFuture(e));
 					return;
 				}
-				if (log.isInfoEnabled()) log.info("ipv6 : " + ipv6);
-				if (log.isInfoEnabled()) log.info("multicastGroupAddress : " + multicastGroupAddress);
-				if (log.isInfoEnabled()) log.info("port : " + port);
-				if (log.isInfoEnabled()) log.info("listenAddress : " + listenAddress);
-				if (log.isInfoEnabled()) log.info("networkInterfaceName : " + networkInterfaceName);
+				if (log.isInfoEnabled()) log.info("ipv6 : {}", ipv6);
+				if (log.isInfoEnabled()) log.info("multicastGroupAddress : {}", multicastGroupAddress);
+				if (log.isInfoEnabled()) log.info("port : {}", port);
+				if (log.isInfoEnabled()) log.info("listenAddress : {}", listenAddress);
+				if (log.isInfoEnabled()) log.info("networkInterfaceName : {}", networkInterfaceName);
 				socket.handler(packet -> {
 					// Processing when packet is received
 					// パケット受信時の処理
 					MongoDbWriter.write(packet);
 					if (printToStdout) System.out.println("[" + packet.sender() + "] " + String.valueOf(packet.data()).trim());
 				}).exceptionHandler(t -> {
-					log.error("exceptionHandler : " + t);
+					log.error("exceptionHandler : {}", t);
 				}).listen(port, listenAddress, resListen -> {
 					if (resListen.succeeded()) {
 						socket.listenMulticastGroup(multicastGroupAddress, networkInterfaceName, null, resListenMulticastGroup -> {
 							if (resListenMulticastGroup.succeeded()) {
-								if (log.isInfoEnabled()) log.info("log receive multicast service started on group address : " + multicastGroupAddress + ", port : " + port);
+								if (log.isInfoEnabled()) log.info("log receive multicast service started on group address : {}, {}", multicastGroupAddress, port);
 								completionHandler.handle(Future.succeededFuture());
 							} else {
 								completionHandler.handle(Future.failedFuture(resListenMulticastGroup.cause()));
@@ -179,7 +179,7 @@ public class LogReceiver extends AbstractVerticle {
 				}
 			}
 		} catch (SocketException e) {
-			log.error(e);
+			log.error("Socket exception occurred", e);
 			completionHandler.handle(Future.failedFuture(e));
 			return;
 		}

@@ -1,7 +1,14 @@
 
-package:
-	mvn package
+build:
+	./gradlew build shadowJar
 
 clean:
-	mvn clean
-	rm -f *.log *.err
+	./gradlew clean
+	rm -rf *.log *.err build
+
+install:
+	./gradlew publishToMavenLocal
+
+doc:
+	./gradlew javadoc
+	

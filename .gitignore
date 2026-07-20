@@ -10,3 +10,5 @@ build
 *.log.lck
 *.err
 *.err.lck
+.gradle
+!gradle/wrapper/gradle-wrapper.jar

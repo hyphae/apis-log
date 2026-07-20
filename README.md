@@ -11,20 +11,20 @@ apis-log is software for receiving data from apis-main by multicast via a commun
 
 ## Installation
 Here is how to install apis-log individually.  
-git, maven, groovy and JDK must be installed in advance.
+git, groovy and JDK must be installed in advance.
 
 ```bash
 $ git clone https://github.com/hyphae/apis-bom.git
 $ cd apis-bom
-$ mvn install
+$ ./gradlew publishToMavenLocal
 $ cd ../
 $ git clone https://github.com/hyphae/apis-common.git
 $ cd apis-common
-$ mvn install
+$ ./gradlew publishToMavenLocal
 $ cd ../
 $ git clone https://github.com/hyphae/apis-log.git
 $ cd apis-log
-$ mvn package
+$ ./gradlew build shadowJar
 ```
 
 ## Running
@@ -72,10 +72,10 @@ An example of creating an API specification using the Javadoc command is shown b
 ```bash  
 $ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/  
 $ cd apis-log  
-$ mvn javadoc:javadoc  
+$ ./gradlew javadoc  
 ```  
 
-The API specification is created in apis-log/target/site/apidocs/.  
+The API specification is created in apis-log/build/docs/javadoc/.  
 
 
 ## License

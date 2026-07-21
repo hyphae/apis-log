@@ -17,7 +17,7 @@
 		"enabled" : true,
 		"level" : "INFO",
 		"host" : "localhost",
-		"port" : 27017,
+		"port" : 27018,
 		"ssl" : false,
 		"sslTrustAll" : false,
 		"database" : "apis_demo",

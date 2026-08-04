@@ -297,36 +297,30 @@ After executing the shutdown function (stop) via the event bus, the script force
     
 ## **7.1. Log Level**
 
-SLF4J with Logback is used for logging. Of the seven available log levels described below, the “CONFIG” and “FINER” levels are not used for APIS. The APIS operation logs are described in the logback.xml file, where the log file location, log levels, maximum log size, and maximum number of logs are set.
+SLF4J with Logback is used for logging. APIS uses the native Logback levels ERROR, WARN, INFO, DEBUG, and TRACE. The APIS operation logs are described in the logback.xml file, where the log file location, log levels, maximum log size, and maximum number of logs are set.
 
 \[APIS Log Level\]
 
-1.  SEVERE
- *  This level is used when an execution error occurs  
+1. ERROR
+ * This level is used when an execution error occurs  
    Log output at this level can be considered an indication that a problem has occurred. 
       * \< Example \>  
         * Analysis of a log received by UDP fails.
 
-2.  WARNING
- *  This level is used to issue a warning when there is unexpected behavior that is not an execution error.   
+2. WARN
+ * This level is used to issue a warning when there is unexpected behavior that is not an execution error.   
    Although this level is available in APIS, it is not used for apis-log.
 
-3.  INFO  
- *  This level is used to output information during normal execution. For apis-log, it is used when event processing that is particularly important to operation is performed.  
-    *  \< Example \> 
-       *  Connection information for MongoDB
+3. INFO  
+ * This level is used to output information during normal execution. For apis-log, it is used when event processing that is particularly important to operation is performed.  
+    * \< Example \> 
+       * Connection information for MongoDB
 
-4.  CONFIG  
- *   This level relates to configuration settings, but is not output for apis-log.
+4. DEBUG  
+ * This level is used for ordinary operation information during normal system operation, but it is not output for apis-log.
 
-5.  FINE  
- *  This level is used for output of ordinary operation information during normal system operation, but it is not output for apis-log.
-
-6.  FINER  
- *  This level is for information related to the starting and stopping of specific processes, but is not output for apis-ccc.
-
-7. FINEST  
- * This level is used for output of ordinary operation information during normal system operation.
+5. TRACE  
+ * This level is used for detailed lifecycle or tracing information, but it is not output for apis-log.
    * \< Example \>
      * When Vert.x Verticle is started up, etc.
 

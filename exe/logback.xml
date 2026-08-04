@@ -3,8 +3,6 @@
 
   <conversionRule conversionWord="apisPrefix"
                   converterClass="jp.co.sony.csl.dcoes.apis.common.util.logback.ApisLogPrefixConverter" />
-  <conversionRule conversionWord="jullevel"
-                  converterClass="jp.co.sony.csl.dcoes.apis.common.util.logback.JulLevelConverter" />
 
   <property name="APIS_PATTERN"
             value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />

@@ -16,7 +16,7 @@
   - [**5.1. Data Written to Log Receiver MongoDB**](#51-data-written-to-log-receiver-mongodb)
 - [**6. Configuration Files**](#6-configuration-files)
   - [**6.1. config.json**](#61-configjson)
-  - [**6.2. logging.properties**](#62-loggingproperties)
+  - [**6.2. logback.xml**](#62-logbackxml)
   - [**6.3. start.sh**](#63-startsh)
   - [**6.4. stop-kill.sh**](#64-stop-killsh)
 - [**7. Logging Functions**](#7-logging-functions)
@@ -246,9 +246,9 @@ The following basic information for configuring apis-log is set in a JSON-format
 
 <br>
 
-## **6.2. logging.properties**
+## **6.2. logback.xml**
 
-This file contains settings that are related to log output of the standard java.util.logging API (log file location, log capacity, logging level, etc.).
+This file contains settings that are related to log output of the Logback backend (log file location, log capacity, logging level, etc.).
 
 <br>
 
@@ -260,7 +260,7 @@ The command in start.sh that starts up apis-log is shown below.
 
 <br>
 
-> java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Djava.util.logging.config.file=./logging.properties -jar ./apis-log-2.23.0-a01-fat.jar -conf ./config.json -cp ./ -cluster &
+> java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Dlogback.configurationFile=./logback.xml -jar ./apis-log-2.23.0-a01-fat.jar -conf ./config.json -cp ./ -cluster &
 
 <br>
 The arguments that follow ‘java’ in the command are explained below.
@@ -271,8 +271,8 @@ The arguments that follow ‘java’ in the command are explained below.
 * Duser.timezone=Asia/Tokyo  
  \-\> Time zone setting
 
-* Djava.util.logging.config.file=./logging.properties  
- \-\> Option for specifying the log configuration file
+* Dlogback.configurationFile=./logback.xml  
+ \-\> Option for specifying the Logback configuration file
 
 * jar ./apis-log-2.23.0-a01-fat.jar  
  \-\> Option for specifying execution of the program encapsulated in a JAR file
@@ -297,36 +297,30 @@ After executing the shutdown function (stop) via the event bus, the script force
     
 ## **7.1. Log Level**
 
-The standard Java java.util.logging API is used for logging. Of the seven available log levels described below, the “CONFIG” and “FINER” levels are not used for APIS. The APIS operation logs are described in the logging.properties file, where the log file location, log levels, maximum log size, and maximum number of logs are set.
+SLF4J with Logback is used for logging. APIS uses the native Logback levels ERROR, WARN, INFO, DEBUG, and TRACE. The APIS operation logs are described in the logback.xml file, where the log file location, log levels, maximum log size, and maximum number of logs are set.
 
-\[java.util.logging Log Level\]
+\[APIS Log Level\]
 
-1.  SEVERE
- *  This level is used when an execution error occurs  
+1. ERROR
+ * This level is used when an execution error occurs  
    Log output at this level can be considered an indication that a problem has occurred. 
       * \< Example \>  
         * Analysis of a log received by UDP fails.
 
-2.  WARNING
- *  This level is used to issue a warning when there is unexpected behavior that is not an execution error.   
+2. WARN
+ * This level is used to issue a warning when there is unexpected behavior that is not an execution error.   
    Although this level is available in APIS, it is not used for apis-log.
 
-3.  INFO  
- *  This level is used to output information during normal execution. For apis-log, it is used when event processing that is particularly important to operation is performed.  
-    *  \< Example \> 
-       *  Connection information for MongoDB
+3. INFO  
+ * This level is used to output information during normal execution. For apis-log, it is used when event processing that is particularly important to operation is performed.  
+    * \< Example \> 
+       * Connection information for MongoDB
 
-4.  CONFIG  
- *   This level relates to configuration settings, but is not output for apis-log.
+4. DEBUG  
+ * This level is used for ordinary operation information during normal system operation, but it is not output for apis-log.
 
-5.  FINE  
- *  This level is used for output of ordinary operation information during normal system operation, but it is not output for apis-log.
-
-6.  FINER  
- *  This level is for information related to the starting and stopping of specific processes, but is not output for apis-ccc.
-
-7. FINEST  
- * This level is used for output of ordinary operation information during normal system operation.
+5. TRACE  
+ * This level is used for detailed lifecycle or tracing information, but it is not output for apis-log.
    * \< Example \>
      * When Vert.x Verticle is started up, etc.
 
@@ -334,7 +328,7 @@ The standard Java java.util.logging API is used for logging. Of the seven availa
 
 ## **7.2. Log Output Destinations**
 
-The apis-log operation logs are output to three destinations: UDP, console, and file. The log output destination and output level can be set in the logging.properties file. Since UDP is output to the communication line, communication traffic and the risk of data leakage should be considered when setting the UDP. In addition, the capacity of non-volatile storage should be considered when outputting to a file.
+The apis-log operation logs are output to three destinations: UDP, console, and file. The log output destination and output level can be set in the logback.xml file. Since UDP is output to the communication line, communication traffic and the risk of data leakage should be considered when setting the UDP. In addition, the capacity of non-volatile storage should be considered when outputting to a file.
 
 ![](media/media/image5.png)
 

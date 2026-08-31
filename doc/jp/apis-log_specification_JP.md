@@ -16,7 +16,7 @@
   - [**5.1. Log Receiver MongoDB書き込み情報**](#51-log-receiver-mongodb書き込み情報)
 - [**6. 設定ファイルについて**](#6-設定ファイルについて)
   - [**6.1. config.json**](#61-configjson)
-  - [**6.2. logging.properties**](#62-loggingproperties)
+  - [**6.2. logback.xml**](#62-logbackxml)
   - [**6.3. start.sh**](#63-startsh)
   - [**6.4. stop-kill.sh**](#64-stop-killsh)
 - [**7. Log出力**](#7-log出力)
@@ -246,9 +246,9 @@ json形式のファイルでapis-logの基本情報を設定する。起動時�
 
 <br>
 
-## **6.2. logging.properties**
+## **6.2. logback.xml**
 
-Javaの標準APIであるjava.util.loggingのLogの出力に関する設定(Logファイルの保存先、Log の保存容量、Log Levelの設定等)が記述されているファイル。
+LogbackのLogの出力に関する設定(Logファイルの保存先、Log の保存容量、Log Levelの設定等)が記述されているファイル。
 
 <br>
 
@@ -260,7 +260,7 @@ apis-logを起動させるスクリプトファイル。OS起動時の自動実�
 
 <br>
 
-> java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Djava.util.logging.config.file=./logging.properties -jar ./apis-log-2.23.0-a01-fat.jar -conf ./config.json -cp ./ -cluster &
+> java -Djava.net.preferIPv4Stack=true -Duser.timezone=Asia/Tokyo -Dlogback.configurationFile=./logback.xml -jar ./apis-log-2.23.0-a01-fat.jar -conf ./config.json -cp ./ -cluster &
 
 <br>
 
@@ -272,8 +272,8 @@ apis-logを起動させるスクリプトファイル。OS起動時の自動実�
 * Duser.timezone=Asia/Tokyo  
  \-\> Timezone設定。
 
-* Djava.util.logging.config.file=./logging.properties  
- \-\>Log構成ファイルを指定するオプション。
+* Dlogback.configurationFile=./logback.xml  
+ \-\>Logback構成ファイルを指定するオプション。
 
 * jar ./apis-log-2.23.0-a01-fat.jar  
  \-\>JARファイルの中にカプセル化されたプログラムの実行を指定するオプション。
@@ -297,40 +297,34 @@ Event Bus経由のShutdown機能(stop)を実施した後、それがタイムア
     
 ## **7.1. Log Level**
 
-Log出力にはJava標準APIのjava.util.loggingを使っており以下の7つのLevelに分類されている。APISとしては”CONFIG”, “FINER”のLevelは使用しない。これらのAPISの動作Logはlogging.propertiesファイルに記載することでLogファイルの保存先、保存するLog Level、最大Logサイズ、最大保存Log数等の設定を行っている。
+Log出力にはSLF4J/Logbackを使っており、APISではLogbackの標準Levelである ERROR, WARN, INFO, DEBUG, TRACE を使う。これらのAPISの動作Logはlogback.xmlファイルに記載することでLogファイルの保存先、Log Level、最大Logサイズ、最大保存Log数等の設定を行っている。
 
-\[java.util.logging Log Level\]
+\[APIS Log Level\]
 
-1. SEVERE  
+1. ERROR  
  * 実行中にErrorが発生した場合に使われるLevelである。  
   このLevelのLogが出力された場合には何等かの不具合が発生したと考えられる。  
     * \<例\> UDP受信したLogの解析が失敗した場合
 
-2. WARNING  
+2. WARN  
  * 実行中にErrorではないが期待された動作でないため警告として知らせる目的で使われるLevelであるがapis-logとしてはこのLevelの出力は行わない。
 
 3. INFO  
  * 実行中の正常系の情報を出力する際に用いられるLevelで、apis-logでは特に動作として重要なイベント処理を行った際に使われる。
    * \<例\> MongoDBとの接続情報
 
-4. CONFIG  
- * 設定に関するLog Levelであるがapis-logとしてはこのLevelの出力は行わない。
-
-5. FINE  
+4. DEBUG  
  *  実行中の正常系の通常動作情報を出力する際に用いられるLevelであるがapis-logとしてはこのLevelの出力は行わない。
 
-6. FINER  
+5. TRACE  
  *  特定の処理についての開始及び終了の情報であるがapis-logとしてはこのLevelの出力は行わない。
-
-7. FINEST  
- * 実行中の正常系の通常動作情報を出力する際に用いられるLevelである。
    * \<例\> Vert.xのVerticle起動時等。
 
 <br>
 
 ## **7.2. . APIS動作Log出力先**  
 
-apis-logの動作LogはUDP、Console、ファイルの3つの出力先がある。logging.propertiesの設定でそれぞれの出力の有無や前頁で述べた出力Levelの制限をかけることができる。UDPはコミュニケーションラインに出力されるため情報漏洩や通信のトラフィックを考慮して設定し、ファイルへの出力は不揮発性メモリの容量を考慮して設定する。
+apis-logの動作LogはUDP、Console、ファイルの3つの出力先がある。logback.xmlの設定でそれぞれの出力の有無や前頁で述べた出力Levelの制限をかけることができる。UDPはコミュニケーションラインに出力されるため情報漏洩や通信のトラフィックを考慮して設定し、ファイルへの出力は不揮発性メモリの容量を考慮して設定する。
 
 ![](media/media/image5.png)
 

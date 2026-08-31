@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.vertx.ext.mongo.MongoClient;
 
-import java.util.logging.Level;
+import ch.qos.logback.classic.Level;
 
 import jp.co.sony.csl.dcoes.apis.common.util.vertx.JsonObjectUtil;
 import jp.co.sony.csl.dcoes.apis.common.util.vertx.VertxConfig;
@@ -65,7 +65,12 @@ public class MongoDbWriter {
 		Boolean enabled_ = VertxConfig.config.getBoolean(DEFAULT_ENABLED, "mongoDbWriter", "enabled");
 		if (enabled_) {
 			try {
-				level_ = Level.parse(VertxConfig.config.getString(DEFAULT_LEVEL, "mongoDbWriter", "level"));
+				String levelName = VertxConfig.config.getString(DEFAULT_LEVEL, "mongoDbWriter", "level");
+				level_ = Level.toLevel(levelName, null);
+
+				if (level_ == null) {
+					throw new IllegalArgumentException("Invalid Logback level: " + levelName);
+				}
 			} catch (Exception e) {
 				log.error("Error occurred while parsing log level", e);
 				completionHandler.handle(Future.failedFuture(e));
@@ -126,7 +131,7 @@ public class MongoDbWriter {
 				completionHandler.handle(Future.failedFuture(e));
 				return;
 			}
-			if (level != null && level_.intValue() <= level.intValue()) {
+			if (level != null && level.isGreaterOrEqual(level_)) {
 				// Does not save because if you try to save a MongoDB error, an infinite error loop can occur (lame)    
 				// MongoDB のエラーを保存しようとすると無限にエラーが起きてしまう可能性があるので保存しない ( ダサい )
 				if (loggername == null || !loggername.startsWith("org.mongodb.")) {
@@ -185,9 +190,13 @@ public class MongoDbWriter {
 	private static Level level_(JsonObject value) throws IllegalArgumentException {
 		String loglevel = value.getString("loglevel");
 		if (loglevel != null) {
-			return Level.parse(loglevel);
+			Level level = Level.toLevel(loglevel, null);
+			if (level == null) {
+				throw new IllegalArgumentException("Invalid Logback level: " + loglevel);
+			}
+			return level;
 		}
-		return Level.SEVERE;
+		return Level.ERROR;
 	}
 	/**
 	 * Stores {@link JsonObject} in MongoDB.

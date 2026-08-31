@@ -9,7 +9,7 @@ def files = [
   [path:"src/main/resources/verify.sh", name:"verify.sh", md5:"yes"],
   [path:"start.sh", name:"start.sh", md5:"no"],
   [path:"config.json", name:"config.json", md5:"no"],
-  [path:"logging.properties", name:"logging.properties", md5:"no"],
+  [path:"logback.xml", name:"logback.xml", md5:"no"],
   [path:"verify.info", name:"verify.info", md5:"no"]
 ]
 
